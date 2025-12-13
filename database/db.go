@@ -22,7 +22,7 @@ func ConnectDatabase() {
 
 	// Auto-Migrate: This creates the tables automatically for you
 	// We will add Product and Order models here later
-	database.AutoMigrate(&models.User{})
+	database.AutoMigrate(&models.User{}, &models.Product{}, &models.Order{}, &models.OrderItem{})
 
 	DB = database
 	fmt.Println("🚀 Database connected successfully!")
