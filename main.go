@@ -47,24 +47,31 @@ func main() {
 
 	// Product Routes Group
 	products := r.Group("/products")
-    {
-        products.POST("/", controllers.CreateProduct)       // Create
-        products.GET("/", controllers.GetProducts)          // List & Filter
-        products.PUT("/:id", controllers.UpdateProduct)     // Update
-        products.DELETE("/:id", controllers.DeleteProduct)  // Delete
-    }
+	{
+		products.POST("/", controllers.CreateProduct)
+		products.GET("/", controllers.GetProducts)
+		products.GET("/summary", controllers.GetInventorySummary) // ✅ Add this for the 3 UI cards
+		products.PUT("/:id", controllers.UpdateProduct)
+		products.DELETE("/:id", controllers.DeleteProduct)
+	}
 
 	orders := r.Group("/orders")
-    {
-        orders.POST("/", controllers.CreateOrder) // Cashier creates order
-        orders.GET("/", controllers.GetOrders)    // Admin sees history
-    }
+	{
+		orders.POST("/", controllers.CreateOrder)
+		orders.GET("/", controllers.GetOrders)
+		orders.PUT("/:id/status", controllers.UpdateOrderStatus) // ✅ Add this line!
+	}
 
 	paymentMethods := r.Group("/payment-methods")
 	{
 		paymentMethods.POST("/", controllers.CreatePaymentMethod)
 		paymentMethods.GET("/", controllers.GetPaymentMethods)
 		paymentMethods.PUT("/:id/status", controllers.UpdatePaymentMethodStatus)
+	}
+
+	analytics := r.Group("/analytics")
+	{
+		analytics.GET("/dashboard", controllers.GetAnalytics)
 	}
 
 	dashboard := r.Group("/dashboard")
