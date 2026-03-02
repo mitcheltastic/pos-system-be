@@ -2,7 +2,7 @@ package api
 
 import (
 	"net/http"
-	"pos-backend/controllers" // Use your actual module name
+	"pos-backend/controllers"
 	"pos-backend/database"
 
 	"github.com/gin-gonic/gin"

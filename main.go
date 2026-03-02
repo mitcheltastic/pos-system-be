@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"pos-backend/controllers" // Import your new controller
+	"pos-backend/controllers" 
 	"pos-backend/database"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

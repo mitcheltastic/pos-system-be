@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"pos-backend/models" // Matches your go.mod
+	"pos-backend/models"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
