@@ -31,6 +31,15 @@ func main() {
 	{
 		auth.POST("/register", controllers.Register)
 		auth.POST("/login", controllers.Login)
+		auth.POST("/change-password", controllers.ChangePassword)
+	}
+
+	storeProfile := r.Group("/store")
+	{
+		storeProfile.POST("/", controllers.CreateStoreProfile)
+		storeProfile.GET("/", controllers.GetStoreProfiles)
+		storeProfile.PUT("/:id", controllers.UpdateStoreProfile)
+		storeProfile.DELETE("/:id", controllers.DeleteStoreProfile)
 	}
 
 	// Product Routes Group
@@ -47,6 +56,13 @@ func main() {
         orders.POST("/", controllers.CreateOrder) // Cashier creates order
         orders.GET("/", controllers.GetOrders)    // Admin sees history
     }
+
+	paymentMethods := r.Group("/payment-methods")
+	{
+		paymentMethods.POST("/", controllers.CreatePaymentMethod)
+		paymentMethods.GET("/", controllers.GetPaymentMethods)
+		paymentMethods.PUT("/:id/status", controllers.UpdatePaymentMethodStatus)
+	}
 
 	dashboard := r.Group("/dashboard")
     {

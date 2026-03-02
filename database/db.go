@@ -32,7 +32,14 @@ func ConnectDatabase() {
 	}
 
 	// 4. Auto-Migrate tables
-	database.AutoMigrate(&models.User{}, &models.Product{}, &models.Order{}, &models.OrderItem{})
+	database.AutoMigrate(
+		&models.User{}, 
+		&models.Product{},
+		&models.Order{},
+		&models.OrderItem{},
+		&models.PaymentMethod{},
+		&models.StoreProfile{},
+	)
 
 	DB = database
 	fmt.Println("🚀 Database connected successfully!")

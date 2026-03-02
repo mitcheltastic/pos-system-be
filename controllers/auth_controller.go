@@ -8,7 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 1. Define what we expect from the user (The Input)
+// --- INPUT STRUCTS ---
+
 type RegisterInput struct {
 	Name     string `json:"name" binding:"required"`
 	Username string `json:"username" binding:"required"`
@@ -21,25 +22,31 @@ type LoginInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
-// 2. Register Function (Create User)
+// ✅ NEW: Struct for changing password
+type ChangePasswordInput struct {
+	Username        string `json:"username" binding:"required"`
+	CurrentPassword string `json:"current_password" binding:"required"`
+	NewPassword     string `json:"new_password" binding:"required"`
+}
+
+// --- FUNCTIONS ---
+
+// 1. Register Function
 func Register(c *gin.Context) {
 	var input RegisterInput
 
-	// Validate JSON input
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Create User Model
 	user := models.User{
 		Name:     input.Name,
 		Username: input.Username,
-		Password: input.Password, // Saving as plain text as requested
+		Password: input.Password, 
 		Role:     input.Role,
 	}
 
-	// Save to Database
 	result := database.DB.Create(&user)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists or database error"})
@@ -49,33 +56,62 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully", "data": user})
 }
 
-// 3. Login Function (Authenticate)
+// 2. Login Function
 func Login(c *gin.Context) {
 	var input LoginInput
 	var user models.User
 
-	// Validate JSON
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Check if user exists
 	if err := database.DB.Where("username = ?", input.Username).First(&user).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return
 	}
 
-	// Check Password (Plain text check)
 	if user.Password != input.Password {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect password"})
 		return
 	}
 
-	// Return User Data (In a real app, we would return a JWT Token here)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successful",
 		"role":    user.Role,
 		"name":    user.Name,
 	})
+}
+
+// ✅ 3. NEW: Change Password Function
+func ChangePassword(c *gin.Context) {
+	var input ChangePasswordInput
+	var user models.User
+
+	// Validate JSON input
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Find the user in the database
+	if err := database.DB.Where("username = ?", input.Username).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	// Verify the current password matches
+	if user.Password != input.CurrentPassword {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect current password"})
+		return
+	}
+
+	// Update to the new password
+	// GORM's .Update() only updates specific columns, which is perfect here
+	if err := database.DB.Model(&user).Update("password", input.NewPassword).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password updated successfully"})
 }
