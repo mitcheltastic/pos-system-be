@@ -4,8 +4,12 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Name     string `json:"name"`
-	Username string `json:"username" gorm:"unique"`
-	Password string `json:"password"` // Storing plain text for now as requested
-	Role     string `json:"role"`     // "admin" or "cashier"
+	FirstName      string `json:"first_name"`
+	LastName       string `json:"last_name"`
+	Username       string `json:"username" gorm:"unique;not null"`
+	Email          string `json:"email" gorm:"unique"` // Added email
+	Phone          string `json:"phone"`               // Added phone
+	ProfilePicture string `json:"profile_picture"`     // Stores the ImageKit URL
+	Password       string `json:"password"`            // Plain text for now
+	Role           string `json:"role"`                // "admin" or "cashier"
 }

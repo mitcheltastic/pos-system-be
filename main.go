@@ -32,6 +32,9 @@ func main() {
 		auth.POST("/register", controllers.Register)
 		auth.POST("/login", controllers.Login)
 		auth.POST("/change-password", controllers.ChangePassword)
+		
+		auth.GET("/profile/:id", controllers.GetProfile)    // ✅ Add this line (Fetch data)
+		auth.PUT("/profile/:id", controllers.UpdateProfile) // (Update data)
 	}
 
 	storeProfile := r.Group("/store")
